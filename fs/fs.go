@@ -165,7 +165,7 @@ func getGitTime(p string, first bool) (int64, error) {
 	}
 
 	// Get the commit time.
-	cmd = exec.Command("git", "show", "-s", "--format=%ct", rev)
+	cmd = exec.Command("git", "show", "-s", "--format=%at", rev)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return 0, err
