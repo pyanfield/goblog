@@ -30,7 +30,7 @@ func (me *MonthEntries) Len() int {
 	return len(me.Entries)
 }
 
-// Less returns true if the value at i is newer than the value at j.
+// Less returns true if the entry at j is newer than the entry at i.
 func (me *MonthEntries) Less(i, j int) bool {
 	return me.Entries[j].Created.Before(me.Entries[i].Created)
 }
