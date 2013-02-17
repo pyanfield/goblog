@@ -26,6 +26,9 @@ var BlogDir string
 // StaticDir is the directory where static assests can be found.
 var StaticDir string
 
+// URL is the url for this site. The RSS feed will use it to generate links.
+var URL string
+
 // MaxIndexEntries is the maximum number of entries to display on the
 // index page.
 var MaxIndexEntries int
@@ -49,6 +52,9 @@ func init() {
 
 	flag.StringVarP(&StaticDir, "static-dir", "s", "static",
 		"The directory where the static assets are located.")
+
+	flag.StringVarP(&URL, "url", "u", "",
+		"The url to be prepended to link in the RSS feed. Defaults to the value in the channel <link>.")
 
 	flag.IntVarP(&MaxIndexEntries, "index-entries", "i", 3,
 		"The maximum number of entries to display on the index page.")
