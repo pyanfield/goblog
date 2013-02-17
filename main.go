@@ -1,3 +1,7 @@
+// Copyright 2013 Joshua Marsh. All rights reserved.  Use of this
+// source code is governed by a BSD-style license that can be found in
+// the LICENSE file.
+
 package main
 
 import (
@@ -5,6 +9,7 @@ import (
 	"github.com/icub3d/goblog/archives"
 	"github.com/icub3d/goblog/blogs"
 	"github.com/icub3d/goblog/fs"
+	"github.com/icub3d/goblog/rss"
 	"github.com/icub3d/goblog/tags"
 	"github.com/icub3d/goblog/templates"
 	flag "github.com/ogier/pflag"
@@ -104,6 +109,13 @@ func main() {
 	if err != nil {
 		fmt.Println("generating index.html:", err)
 		os.Exit(1)
+	}
+
+	// Generate the RSS feed.
+	err = rss.MakeRss(archives.GetMostRecent(a, 10), URL, TemplateDir, OutputDir)
+	if err != nil {
+		fmt.Println("generating feed.rss:", err)
+		fmt.Println("no rss will be available")
 	}
 
 }

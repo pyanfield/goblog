@@ -1,3 +1,7 @@
+// Copyright 2013 Joshua Marsh. All rights reserved.  Use of this
+// source code is governed by a BSD-style license that can be found in
+// the LICENSE file.
+
 package archives
 
 import (
@@ -30,7 +34,7 @@ func (me *MonthEntries) Len() int {
 	return len(me.Entries)
 }
 
-// Less returns true if the value at i is newer than the value at j.
+// Less returns true if the entry at j is newer than the entry at i.
 func (me *MonthEntries) Less(i, j int) bool {
 	return me.Entries[j].Created.Before(me.Entries[i].Created)
 }

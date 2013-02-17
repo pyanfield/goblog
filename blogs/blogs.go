@@ -1,3 +1,7 @@
+// Copyright 2013 Joshua Marsh. All rights reserved.  Use of this
+// source code is governed by a BSD-style license that can be found in
+// the LICENSE file.
+
 // Package blog contains structures, methods and functions for
 // manipulating blog entries.
 package blogs
@@ -80,6 +84,16 @@ func (be *BlogEntry) CDate() string {
 	}
 
 	return be.Created.Format("2006-01-02")
+}
+
+// PubDate is a helper function for the templating system that returns
+// the Created date as an RFC822 string or "" if there is no value.
+func (be *BlogEntry) PubDate() string {
+	if be.Created.IsZero() {
+		return ""
+	}
+
+	return be.Created.Format(time.RFC822)
 }
 
 // UDate is a helper function for the templating system that returns
