@@ -6,6 +6,8 @@ package main
 
 import (
 	flag "github.com/ogier/pflag"
+	"log"
+	"os"
 	"path"
 )
 
@@ -37,7 +39,15 @@ var URL string
 // index page.
 var MaxIndexEntries int
 
+var LOG = log.New(os.Stderr, "---", log.Ldate|log.Ltime|log.Lshortfile)
+
 func init() {
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		LOG.Println("Please set GOPATH first")
+		os.Exit(1)
+	}
+
 	flag.StringVarP(&WorkingDir, "working-dir", "w", "./",
 		"The directory where all the other directories reside. This "+
 			"will be prepended to the rest of the configurable directories.")

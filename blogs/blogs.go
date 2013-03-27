@@ -8,7 +8,7 @@ package blogs
 
 import (
 	"bytes"
-	"github.com/icub3d/goblog/fs"
+	"github.com/pyanfield/goblog/fs"
 	md "github.com/russross/blackfriday"
 	"io/ioutil"
 	"path"

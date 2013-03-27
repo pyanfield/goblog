@@ -9,7 +9,7 @@ package rss
 import (
 	"bytes"
 	"fmt"
-	"github.com/icub3d/goblog/blogs"
+	"github.com/pyanfield/goblog/blogs"
 	"io/ioutil"
 	"path"
 	"regexp"

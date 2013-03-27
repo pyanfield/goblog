@@ -5,7 +5,7 @@
 package archives
 
 import (
-	"github.com/icub3d/goblog/blogs"
+	"github.com/pyanfield/goblog/blogs"
 )
 
 // This is used to simplify the Less function.

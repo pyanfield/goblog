@@ -7,9 +7,9 @@ package templates
 import (
 	"bytes"
 	"fmt"
-	"github.com/icub3d/goblog/archives"
-	"github.com/icub3d/goblog/blogs"
-	"github.com/icub3d/goblog/tags"
+	"github.com/pyanfield/goblog/archives"
+	"github.com/pyanfield/goblog/blogs"
+	"github.com/pyanfield/goblog/tags"
 	"io/ioutil"
 	"os"
 	"path"

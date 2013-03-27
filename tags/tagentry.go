@@ -5,7 +5,7 @@
 package tags
 
 import (
-	"github.com/icub3d/goblog/blogs"
+	"github.com/pyanfield/goblog/blogs"
 )
 
 // TagEntry is a Tag and it's associated entries. It is used as a

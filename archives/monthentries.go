@@ -5,7 +5,7 @@
 package archives
 
 import (
-	"github.com/icub3d/goblog/blogs"
+	"github.com/pyanfield/goblog/blogs"
 )
 
 // MonthEntries is a list of entries and their associated month. It

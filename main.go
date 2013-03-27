@@ -6,12 +6,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/icub3d/goblog/archives"
-	"github.com/icub3d/goblog/blogs"
-	"github.com/icub3d/goblog/fs"
-	"github.com/icub3d/goblog/rss"
-	"github.com/icub3d/goblog/tags"
-	"github.com/icub3d/goblog/templates"
+	"github.com/pyanfield/goblog/archives"
+	"github.com/pyanfield/goblog/blogs"
+	"github.com/pyanfield/goblog/fs"
+	"github.com/pyanfield/goblog/rss"
+	"github.com/pyanfield/goblog/tags"
+	"github.com/pyanfield/goblog/templates"
 	flag "github.com/ogier/pflag"
 	"os"
 )
