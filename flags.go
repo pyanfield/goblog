@@ -48,7 +48,7 @@ func init() {
 		os.Exit(1)
 	}
 
-	flag.StringVarP(&WorkingDir, "working-dir", "w", "./",
+	flag.StringVarP(&WorkingDir, "working-dir", "w", gopath,
 		"The directory where all the other directories reside. This "+
 			"will be prepended to the rest of the configurable directories.")
 
