@@ -19,16 +19,20 @@ import (
 )
 
 // MakeDirIfNotExists creates the given directory if it does not exist.
+// 创建一个文件夹如果这个文件夹不存在
 func MakeDirIfNotExists(dir string) error {
+	// 得到所给路径 dir的 FileInfo
 	st, err := os.Stat(dir)
 	if err != nil {
 		// It may just not exist. Make it or error out trying.
+		// 如果文件夹不存在就创建一个文件夹
 		if os.IsNotExist(err) {
 			return os.Mkdir(dir, 0750)
 		}
 	}
 
 	// It exists, make sure it's a directory.
+	// 不是文件夹提示错误
 	if !st.IsDir() {
 		return fmt.Errorf("not a directory: %s", dir)
 	}
