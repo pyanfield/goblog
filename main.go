@@ -6,22 +6,38 @@ package main
 
 import (
 	"fmt"
+	flag "github.com/ogier/pflag"
 	"github.com/pyanfield/goblog/archives"
 	"github.com/pyanfield/goblog/blogs"
 	"github.com/pyanfield/goblog/fs"
 	"github.com/pyanfield/goblog/rss"
 	"github.com/pyanfield/goblog/tags"
 	"github.com/pyanfield/goblog/templates"
-	flag "github.com/ogier/pflag"
+	"go/build"
+	"log"
 	"os"
+	"path"
+)
+
+var (
+	LOG   = log.New(os.Stderr, "---", log.Ldate|log.Ltime|log.Lshortfile)
+	ERROR = LOG
+)
+
+const (
+	// 本框架路径
+	GOBLOG_IMPORT_PATH = "github.com/pyanfield/goblog"
+	//默认情况下会在 GOPATH下面的 goblog_workspace下面去创建文件夹来存放我们所有的文件
+	GOBLOG_CONTENT = "goblog_workspace"
 )
 
 func main() {
 	// Parse the flags.
 	flag.Parse()
-	SetupDirectories()
+	setupDirectories()
 
 	// First load the templates.
+	// 返回的是 tmplts 是map[string]*template.Template，一个以模版文件名字为key值的Template的map
 	tmplts, err := templates.LoadTemplates(TemplateDir)
 	if err != nil {
 		fmt.Println("loading templates:", err)
@@ -30,6 +46,7 @@ func main() {
 
 	// Next, let's clear out the OutputDir if requested.
 	if EmptyOutputDir {
+		// 删除当前路径及其路径下的所有子文件。如果这个路径不存在将返回nil
 		err = os.RemoveAll(OutputDir)
 		if err != nil {
 			fmt.Println("cleaning output dir:", err)
@@ -118,4 +135,47 @@ func main() {
 		fmt.Println("no rss will be available")
 	}
 
+}
+
+// SetupDirectories is a helper function that prepends the working
+// directory to the other directories.
+func setupDirectories() {
+	// 检查是否通过命令输入了 WorkingDir ，如果没有，那就按照 GOBLOG_CONTENT建立博客的文件结构
+	if WorkingDir == "./" {
+		src := findSrcPath()
+		if err := fs.MakeDirIfNotExists(GOBLOG_CONTENT); err != nil {
+			ERROR.Fatalln("make diretory blog content:", err)
+		}
+		WorkingDir = path.Join(src, GOBLOG_CONTENT)
+	}
+	OutputDir = path.Join(WorkingDir, OutputDir)
+	if err := fs.MakeDirIfNotExists(OutputDir); err != nil {
+		ERROR.Fatalln(err)
+	}
+	TemplateDir = path.Join(WorkingDir, TemplateDir)
+	if err := fs.MakeDirIfNotExists(TemplateDir); err != nil {
+		ERROR.Fatalln(err)
+	}
+	StaticDir = path.Join(WorkingDir, StaticDir)
+	if err := fs.MakeDirIfNotExists(StaticDir); err != nil {
+		ERROR.Fatalln(err)
+	}
+	BlogDir = path.Join(WorkingDir, BlogDir)
+	if err := fs.MakeDirIfNotExists(BlogDir); err != nil {
+		ERROR.Fatalln(err)
+	}
+}
+
+//查找本项目的源地址
+func findSrcPath() string {
+	// 检查是否定义了 GOPATH 环境变量
+	if gopath := os.Getenv("GOPATH"); gopath == "" {
+		ERROR.Fatalln("Please set GOPATH first")
+	}
+	goblogPkg, err := build.Import(GOBLOG_IMPORT_PATH, "", build.FindOnly)
+	// LOG.Println("appPkg >> ", goblogPkg.SrcRoot)
+	if err != nil {
+		ERROR.Fatalln("Failed to import", "", "with error:", err)
+	}
+	return goblogPkg.SrcRoot
 }

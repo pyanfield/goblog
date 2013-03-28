@@ -341,6 +341,8 @@ func (t Templates) makeBlogHelper(blog *blogs.BlogEntry,
 // them as a map where the key is the template name and the value is
 // the template itself. It currently looks for and loads the following
 // templates with the following known dot values:
+// 读取制定目录下面的 template 到 map,其中的 key 值是 template的名字，而value则是这个template本身的数据。
+// 当前会加载下面的模版也变量
 //
 //  about.html - The about page of the site.
 //    Variables:
@@ -366,11 +368,15 @@ func (t Templates) makeBlogHelper(blog *blogs.BlogEntry,
 //    Variables:
 //
 // All of the templates must exist for this to succeed.
+// 所有的模版必须存在才能加载成功
+
 func LoadTemplates(dir string) (Templates, error) {
 	// This will be our return value.
+	// map[string]*template.Template
 	ret := make(Templates)
 
 	// This is the list of templates to look for
+	// 要查找的模版名称，及所有的html文件
 	templates := []string{
 		"about",
 		"archive",
@@ -385,12 +391,15 @@ func LoadTemplates(dir string) (Templates, error) {
 		filename := path.Join(dir, t+".html")
 
 		// Get the contents.
+		// 读取指定路径下的文件内容[]byte，如果成功则返回 nil,否则返回 EOF
 		contents, err := ioutil.ReadFile(filename)
 		if err != nil {
 			return nil, err
 		}
 
 		// Generate the template.
+		// 将读取到的内容转化成字符串，然后解析成 *Template
+		// 这样在后面如果需要的时候可以将 temlt.Execute输出出去
 		tmplt, err := template.New(t).Parse(string(contents))
 		if err != nil {
 			return nil, err
