@@ -42,9 +42,11 @@ func MakeDirIfNotExists(dir string) error {
 
 // CopyFilesRecursively copies the contents of the directory src
 // into dest.
+// 通过递归调用，将 src 下的文件子文件全都复制到 dest下面
 func CopyFilesRecursively(dest, src string) error {
 
 	// Read the list of entries for src.
+	// 返回src下面的所有子文件夹,子文件信息
 	files, err := ioutil.ReadDir(src)
 	if err != nil {
 		return err
@@ -56,6 +58,8 @@ func CopyFilesRecursively(dest, src string) error {
 
 		// If the file is a directory, make it and then recursively call
 		// this function.
+		// 如果 file 是文件，那么建立一个同名的文件夹，然后递归这个文件夹下
+		// 如果是文件，那么就复制这个文件
 		if file.IsDir() {
 			err = MakeDirIfNotExists(d)
 			if err != nil {
@@ -72,6 +76,7 @@ func CopyFilesRecursively(dest, src string) error {
 		}
 
 		// Set the create/mod times to be the same as the src.
+		// 修改目标文件文件的创立时间和修改时间与源文件的相同
 		err = os.Chtimes(d, file.ModTime(), file.ModTime())
 		if err != nil {
 			return err
@@ -83,13 +88,16 @@ func CopyFilesRecursively(dest, src string) error {
 
 // Copy file makes an exact copy fo the file at src and saves it to
 // dest. The contents of dest are overwritten if it exists.
+// 复制源文件到目标文件夹中，如果这个文件已经存在，那么覆盖这个文件
 func CopyFile(dest, src string) error {
+	// 读取 src 文件，返回 *File
 	in, err := os.Open(src)
 	if err != nil {
 		return err
 	}
 	defer in.Close()
 
+	// 建立文件，且mode为 0666, 返回 *File
 	out, err := os.Create(dest)
 	if err != nil {
 		return err

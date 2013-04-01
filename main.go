@@ -44,24 +44,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Next, let's clear out the OutputDir if requested.
-	if EmptyOutputDir {
-		// 删除当前路径及其路径下的所有子文件。如果这个路径不存在将返回nil
-		err = os.RemoveAll(OutputDir)
-		if err != nil {
-			fmt.Println("cleaning output dir:", err)
-			os.Exit(1)
-		}
-	}
-
-	// Make the output dir.
-	err = fs.MakeDirIfNotExists(OutputDir)
-	if err != nil {
-		fmt.Println("making output dir:", err)
-		os.Exit(1)
-	}
-
 	// Now, move the static files over.
+	// 复制 static 文件夹下所有的子文件夹和子文件到 public 文件夹下
 	err = fs.CopyFilesRecursively(OutputDir, StaticDir)
 	if err != nil {
 		fmt.Println("making output dir:", err)
@@ -149,6 +133,15 @@ func setupDirectories() {
 		WorkingDir = path.Join(src, GOBLOG_CONTENT)
 	}
 	OutputDir = path.Join(WorkingDir, OutputDir)
+	// Next, let's clear out the OutputDir if requested.
+	if EmptyOutputDir {
+		// 删除当前路径及其路径下的所有子文件。如果这个路径不存在将返回nil
+		err := os.RemoveAll(OutputDir)
+		if err != nil {
+			fmt.Println("cleaning output dir:", err)
+			os.Exit(1)
+		}
+	}
 	if err := fs.MakeDirIfNotExists(OutputDir); err != nil {
 		ERROR.Fatalln(err)
 	}
