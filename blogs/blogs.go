@@ -60,8 +60,10 @@ type BlogEntry struct {
 // Parse reads the contents of the path for this BlogEntry. It gleans
 // information from the file and saves it to this BlogEntry. It then
 // formats the markdown to HTML and returns that.
+// 根据 BlogEntry的文件path路径信息，读取文件的内容。
 func (be *BlogEntry) Parse() (string, error) {
 	// Get the files contents.
+	// 根据文件路径读取其内容, A successfull read shoud return err == nil , err != EOF
 	orgContents, err := ioutil.ReadFile(be.Path)
 	if err != nil {
 		return "", err
@@ -212,6 +214,10 @@ func MakeBlogName(names ...string) (string, error) {
 // gleanInfo is a helper function that searches for various comments
 // that contain useful information about the blog. It also uses fetchs
 // the update and create dates.
+// 这个函数主要作用就是用来收集blog的一些需要的信息。 
+// 这些信息是 md 文件中的一些诸如 Title, Author等等信息。在 md 文件中，我们通过类似 HTML中代码注释的写法
+// 来描述这片博客的内容，比如 <!--Title: This is a ttitle--> <!--Author:pyanfield-->
+// 也获取更新和创建的时间。
 func (be *BlogEntry) gleanInfo(contents string) error {
 	/* These are the patterns we are searching for */
 	var err error
@@ -252,6 +258,7 @@ func (be *BlogEntry) gleanInfo(contents string) error {
 // regexList is a helper function that performs a regex search for an
 // HTML comment with the given title. It returns the list (comma
 // separated) of values.
+// 通过 regexSingle来查找到 key键的值，然后根据逗号来将值的内容分组
 func regexList(key, contents string) ([]string, error) {
 	val, err := regexSingle(key, contents)
 	if err != nil {
@@ -268,15 +275,20 @@ func regexList(key, contents string) ([]string, error) {
 // regexSingle is a helper function that performs a regex search for
 // an HTML comment with the given title. It returns the value if it
 // was found, or "" if it wasn't.
+// 在md文件中，去匹配类似 HTML 注释内容的字符串，然后在根据key值在这个字符串中找到我们需要的内容
 func regexSingle(key, contents string) (string, error) {
+	// 建立一个正则表达式模型
 	pattern := "<!--[ ]*" + key + ":(.*)-->"
-
+	// 通过这个正则表达式的模型，我们去得到 *Regexp
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		return "", err
 	}
-
+	// 在 contents里查找最左边的第一个匹配则个正则表达式的部分，然后保存在一个 slice里
+	// 保存在 matches里卖弄的东西类似这样 matches[0] = <!--Title: test title here-->
+	// matches[1] = test title here
 	matches := re.FindStringSubmatch(contents)
+	// 所以这里如果返回的 matches 的长度小于2，那么就返回一个空，也就是说没有找到匹配的东西
 	if len(matches) < 2 {
 		return "", nil
 	}

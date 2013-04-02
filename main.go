@@ -62,6 +62,7 @@ func main() {
 
 	// Iteratively Parse each blog for it's useful data and generate a
 	// page for each blog.
+	// 遍历 []*BlogEntry{}
 	for _, blog := range entries {
 		contents, err := blog.Parse()
 		if err != nil {
