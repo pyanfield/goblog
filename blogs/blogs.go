@@ -8,6 +8,7 @@ package blogs
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/pyanfield/goblog/fs"
 	md "github.com/russross/blackfriday"
 	"io/ioutil"
@@ -117,16 +118,21 @@ func (be *BlogEntry) UDate() string {
 // files is in a directory, the directory name is used as a prefix to
 // the blog entries name concatenated with a '-'. The blog is not
 // parsed or read. You should do that yourself elsewhere.
+// 返回 dir 文件夹下的 BlogEntry 的list,这些 Blog的文件必须是以 .md结尾. 如果Blog文件在一个子文件夹内，
+// 那么这个子文件夹的名字会作为Blog的前缀，并且以 "-" 来作为文件夹和BLOG文件的连接. 
+// BLOG 不会被解析和读取
 func GetBlogFiles(dir string) ([]*BlogEntry, error) {
 	entries := []*BlogEntry{}
 
 	// Read the list of entries for dir.
+	// 读取dir下的文件夹和文件信息
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, file := range files {
+		// 完整的本地路径
 		p := path.Join(dir, file.Name())
 
 		// If it's a directory, then recursively call this function and
@@ -153,15 +159,19 @@ func GetBlogFiles(dir string) ([]*BlogEntry, error) {
 			}
 		} else {
 			// We only deal with .md (markdown) files.
+			// 如果是文件，那么检测是否以.md 为文件扩展名的markdown文件
 			if path.Ext(p) != ".md" {
 				continue
 			}
 
 			// Get the name of the entry.
+			// 将文件和其扩展名分割，只读取文件名
 			pieces := strings.Split(file.Name(), ".md")
 			newName := pieces[0]
 
 			// Just create the new entry.
+			// 生成新的BlogEntry，保存其文件名，带有新的扩展名html的URL和文件路径
+			// 将其加入到 entries里面
 			entries = append(entries, &BlogEntry{
 				Name: newName,
 				Url:  newName + ".html",
@@ -175,17 +185,19 @@ func GetBlogFiles(dir string) ([]*BlogEntry, error) {
 
 // MakeBlogName concatenates all of the given names with a dash and
 // replaces illegal blog name characters with a dash.
+// 将不合法的名字替换成 "-"，并且如果这个使用"-"作为文件夹与子文件的连接符
 func MakeBlogName(names ...string) (string, error) {
 	re := regexp.MustCompile("[^-a-zA-Z0-9_]")
 	buf := new(bytes.Buffer)
 
 	end := len(names) - 1
 	for i, name := range names {
+		// fmt.Println(name)
 		_, err := buf.Write(re.ReplaceAll([]byte(name), []byte("-")))
 		if err != nil {
 			return "", err
 		}
-
+		// 如果是文件夹的话，那么在其后面添加 "-" 以作为和子文件的连接
 		if i != end {
 			_, err := buf.Write([]byte("-"))
 			if err != nil {
@@ -194,7 +206,6 @@ func MakeBlogName(names ...string) (string, error) {
 
 		}
 	}
-
 	return buf.String(), nil
 }
 

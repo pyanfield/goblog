@@ -53,6 +53,7 @@ func main() {
 	}
 
 	// Get a list of files from the BlogDir.
+	// 得到Blog文件夹下的所有md文件列表，如果在Blog下有子文件夹，那么这个文件夹的名字作为前缀，以"-"为连接符，形成新的文件名
 	entries, err := blogs.GetBlogFiles(BlogDir)
 	if err != nil {
 		fmt.Println("getting blog file list:", err)
