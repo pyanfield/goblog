@@ -1,12 +1,14 @@
 源码阅读，增加了一些中文注释，也修改了一部分代码。
 ========================
-修改了一部分代码，当通过 
+主要修改的部分是，当通过 
 	
 	go install github.com/pyanfield/goblog
 	
 安装之后，运行goblog，在不输入任何参数的情况下，会默认 $GOPATH/src 下创建一个 `goblog_workspace` 的文件夹,及四个子文件夹 `blogs` `public` `static` `templates`。
 
 其中的blogs里用来存放 markdown文件，在 templates里放入一些模板文件， 在通过转换之后，所有的 blogs里面的md文件都会转化成 html文件保存在 public里，这里就是我们最后需要的静态页面。
+
+在这个项目中没有自己对 Markdown 文件进行解析处理，而是引入了 [russross/blackfriday](http://github.com/russross/blackfriday) 这个开源项目来解析 md 文件。本项目主要实现了文件的索引， template 渲染等。
 
 
 goblog
