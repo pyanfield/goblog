@@ -64,6 +64,7 @@ func main() {
 	// page for each blog.
 	// 遍历 []*BlogEntry{}
 	for _, blog := range entries {
+		// 解析 md 文件的内容，并且获取一些描述信息，比如 title, author ,date等等
 		contents, err := blog.Parse()
 		if err != nil {
 			fmt.Println("parsing blog", blog, ":", err)

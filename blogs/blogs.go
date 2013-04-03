@@ -8,7 +8,7 @@ package blogs
 
 import (
 	"bytes"
-	"fmt"
+	// "fmt"
 	"github.com/pyanfield/goblog/fs"
 	md "github.com/russross/blackfriday"
 	"io/ioutil"
@@ -70,6 +70,7 @@ func (be *BlogEntry) Parse() (string, error) {
 	}
 
 	// Save some of the meta data.
+	// 获取md文件信息，包括 title ,author等等
 	err = be.gleanInfo(string(orgContents))
 	if err != nil {
 		return "", err
@@ -246,7 +247,8 @@ func (be *BlogEntry) gleanInfo(contents string) error {
 	if err != nil {
 		return err
 	}
-
+	// 获取文件的创建和修改时间，先去查找 git 的第一次提交和最后一次提交的日期
+	// 如果没有就去调用 Unix 的系统时间
 	be.Created, be.Updated, err = fs.GetTimes(be.Path)
 	if err != nil {
 		return err

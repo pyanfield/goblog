@@ -266,6 +266,8 @@ func (t Templates) MakeTags(dir string, ta []*tags.TagEntry) error {
 //
 // The results of that templating are then used as the content for
 // calling MakeWebPage.
+// 调用 template 文件夹下的 entry.html 模板，根据 BlogEntry和 contents信息，
+// 在 dir 文件夹下生成 html 文件
 func (t Templates) MakeBlogEntry(dir string, blog *blogs.BlogEntry,
 	contents string) error {
 
@@ -303,6 +305,7 @@ func (t Templates) MakeBlogEntry(dir string, blog *blogs.BlogEntry,
 //      .AtTags      - If true, the page is the index.html page.
 //      .AtArchives  - If true, the page is the index.html page.
 //      .AtAbout     - If true, the page is the index.html page.
+// 渲染 SiteData数据到 site.html中。
 func (t Templates) MakeWebPage(file string, sd *SiteData) error {
 	// Get a file handle to write the contents to.
 	f, err := os.Create(file)
@@ -325,6 +328,7 @@ func (t Templates) makeBlogHelper(blog *blogs.BlogEntry,
 	contents string) (string, error) {
 
 	// Make the data that will be passed to the templater.
+	// 生成一个 templateData 结构体，用来表示 BlogEntry描述信息和 blog内容
 	templateData := struct {
 		*blogs.BlogEntry
 		Content string
@@ -415,6 +419,7 @@ func LoadTemplates(dir string) (Templates, error) {
 // ExecTemplate calls the Execute function on the given template and
 // saves the results to the string. The given set of args should be a
 // map of arguments within the template and their values.
+// 将 args 中的数据变量，赋值到 template中的变量，然后保存在 bytes.Buffer中，最后返回字符串
 func ExecTemplate(t *template.Template, args interface{}) (string,
 	error) {
 

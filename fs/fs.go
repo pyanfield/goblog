@@ -115,18 +115,24 @@ func CopyFile(dest, src string) error {
 // GetTimes attempts to get the create and last modify times of the
 // given path. It first tries using git for the first and last
 // commits. If that fails, it uses the system time.
+// 根据提供的路径获取创建和最后一次修改的时间。
+// 首先是去尝试去获得第一次和最后一次git commit的时间。如果失败了，就再去使用系统的时间。
 func GetTimes(p string) (time.Time, time.Time, error) {
 
 	// First try to get the git times.
+	// 去获取 git 里的第一次提交和最后一次提交的时间，第一次提交作为创建时间，最后一次为修改时间。
 	first, err1 := getGitTime(p, true)
 	second, err2 := getGitTime(p, false)
 
 	if err1 == nil && err2 == nil {
 		// We got the times, so let's return those!
+		// 返回 Unix 时间
 		return time.Unix(first, 0), time.Unix(second, 0), nil
 	}
 
 	// One of them must have failed, so let's get the system times.
+	// 如果获取 git 提交时间失败的话，那么去获取系统时间
+	// 先去抓取文件的 FileInfo信息
 	fi, err := os.Stat(p)
 	if err != nil {
 		return time.Now(), time.Now(), nil
@@ -138,30 +144,41 @@ func GetTimes(p string) (time.Time, time.Time, error) {
 // getGitTime calls various git commands to get the UNIX Epoch time
 // the file was made. if first is true, the original commit time is
 // returned, otherwise, the most recent commit time is returned.
+// 返回 git 第一个提交和最后一个提交的时间戳。
+// 如果 first 为true，则返回的是第一个提交的时间，否则则为最后一次提交的时间
 func getGitTime(p string, first bool) (int64, error) {
+	//将路径分离成文件路径和文件名字两部分
 	dir, file := path.Split(p)
 
 	// Get our current directory and defer jumping back to it.
+	// 返回当前文件夹的路径，及 ./goblog 的路径
 	cwd, err := os.Getwd()
 	if err != nil {
 		return 0, err
 	}
+	// 无论如何，最后都要回复当前的工作地址
 	defer os.Chdir(cwd)
 
 	// Change directories.
+	// 修改当前的 working diretory 到 dir 路径下
 	err = os.Chdir(dir)
 	if err != nil {
 		return 0, err
 	}
 
 	// Call the revlist
+	// 执行 git rev-list --max-parents=1 HEAD file的命令
+	// git rev-list 有点类似git log,但是他会输出从一个commit 的SHA-1到另一个commit的 SHA-1
+	// 的所有commit的 SHA值
 	cmd := exec.Command("git", "rev-list", "--max-parents=1", "HEAD", file)
+	// 返回执行命令之后的结果
 	revs, err := cmd.CombinedOutput()
 	if err != nil {
 		return 0, err
 	}
 
 	// Get the first or last item.
+	// 将执行命令返回的结果放入到 revslist里面，一边查找第一个和最后一个值
 	revslist := strings.Split(string(revs), "\n")
 	var rev string
 	if !first {
@@ -169,6 +186,7 @@ func getGitTime(p string, first bool) (int64, error) {
 	} else {
 		// The last one will actually be an empty line, so we want the
 		// second to last.
+		// 因为在revslist里面的最后一个值是空白行，所以我们想要的真正的结果是前面的非空白行的值
 		if len(revslist) < 2 {
 			rev = revslist[0]
 		} else {
@@ -181,6 +199,8 @@ func getGitTime(p string, first bool) (int64, error) {
 	}
 
 	// Get the commit time.
+	// %at: author date, UNIX timestamp
+	// 通过 git show -s --format=%at rev命令来得到想要的提交时间戳
 	cmd = exec.Command("git", "show", "-s", "--format=%at", rev)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -188,6 +208,7 @@ func getGitTime(p string, first bool) (int64, error) {
 	}
 
 	// Convert to int.
+	// 转化成十进制的 int64格式
 	i, err := strconv.ParseInt(strings.TrimSpace(string(output)), 10, 64)
 	if err != nil {
 		return 0, err
